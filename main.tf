@@ -145,6 +145,7 @@ resource "docker_container" "syslog" {
 ## revproxy
 ## - Simple HTTP Reverse Proxy
 ##   Not necessarily needed, but nice to have for accessing web pages
+##   https://github.com/john2exonets/http-reverse-proxy
 ##
 resource "docker_image" "revproxy" {
   name = "jdallen/revproxy:latest"
