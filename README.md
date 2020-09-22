@@ -19,4 +19,4 @@ NOTE!   Terraform does NOT seem to be able to (Sept. 2020 -- version ) attach a 
 Because of this, you will NOT be able to bring up the webpage from outside of the VM.  You will have to use
 something like curl to connect to the 'slb-outside-net' interface on the cThunder in order to show the
 connection to one of the Nginx containers, or use a reverse proxy from the default 'bridge' network to the 
-cThunder SLB port.
+cThunder SLB port. Here is what I use: https://github.com/john2exonets/http-reverse-proxy 
