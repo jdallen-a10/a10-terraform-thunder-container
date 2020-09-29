@@ -11,7 +11,7 @@
 ##
 
  resource "docker_image" "cthunder" {
-   name         = "acos_docker_5_2_0_154:latest"
+   name         = "acos_docker_5_2_0-p1_31:latest"
    keep_locally = true
  }
 
@@ -61,9 +61,9 @@ resource "docker_container" "cthunder" {
     "ACOS_CTH_VETH_DRIVER_LST=veth,macvlan"
   ]
   # Our startup configuration
-  volumes {
-    host_path      = "/root/terraform/basic-slb/cthunder/demo.cfg"
-    container_path = "/tmp/demo.cfg"
+  upload {
+    content = file("./cthunder/demo.cfg")
+    file    = "/tmp/demo.cfg"
   }
 }
 
