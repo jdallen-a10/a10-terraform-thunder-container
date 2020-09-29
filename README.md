@@ -4,9 +4,8 @@ Terraform files to run Thunder Container on Docker
 This is a demo environment that makes use of a Ubuntu VM running on a VirtualBox hypervisor. This allows for
 demo's to be run on a laptop environment!  The Terraform files are located in a directory on the host computer,
 and point to the VM's IP address.  Docker-ce is installed on the Ubuntu VM.  You can use other Linux OS for 
-your guest VM...I used Ubuntu 16.04 LTS for my demo VM.  There are several files that need to be moved onto
-the Docker VM. I put them in a '/root/terraform/basic-sl' directory. These are referenced in the Terrform files...
-be sure to change those lines in the Terraform files to reflect your environment.
+your guest VM...I used Ubuntu 16.04 LTS for my demo VM.  There are several files config files that are uploaded into
+the containers before they are started.
 
 The 'startDemo.sh' and 'stopDemo.sh' automate the starting and stopping of the 'Basic SLB' demo. The 'startDemo.sh'
 script will only work on a Mac OSX machine. If you come up with an Windows start/stop, please feel free to do
