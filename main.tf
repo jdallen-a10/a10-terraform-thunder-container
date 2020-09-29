@@ -135,9 +135,9 @@ resource "docker_container" "syslog" {
     host_path      = "/root/terraform/basic-slb/syslog/log"
     container_path = "/var/log"
   }
-  volumes {
-    host_path      = "/root/terraform/basic-slb/syslog/syslog-ng.conf"
-    container_path = "/etc/syslog-ng/syslog-ng.conf"
+  upload {
+    content = file("./syslog/syslog-ng.conf")
+    file    = "/etc/syslog-ng/syslog-ng.conf"
   }
 }
 
