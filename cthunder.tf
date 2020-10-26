@@ -4,24 +4,34 @@
 ##  John D. Allen
 ##  Sr. Solutions Engineer
 ##  A10 Networks, Inc.
-##  August, 2020
+##  September, 2020
 ##
 ##  Licensed under Apache-2.0 for private use.
 ##  All other Rights Reserved.
 ##
+##  Version:
+##  - 0.1.0:  Initial version using Thunder Container v5.2.0
 
- resource "docker_image" "cthunder" {
-   name         = "acos_docker_5_2_0-p1_31:latest"
-   keep_locally = true
- }
+resource "docker_image" "thunder" {
+  name         = "acos_docker_5_2_0-p1_31:latest"
+  keep_locally = true
+}
+#resource "docker_image" "thunder" {
+#  name         = "acos_docker_5_2_0_154:latest"
+#  keep_locally = true
+#}
+# resource "docker_image" "thunder" {
+#   name         = "acos_docker_5_1_0-p4_23:latest"
+#   keep_locally = true
+# }
 
-resource "docker_container" "cthunder" {
+resource "docker_container" "thunder" {
   depends_on = [
     docker_network.slb-outside-net,
     docker_network.slb-inside-net
   ]
-  image = docker_image.cthunder.latest
-  name  = "cthunder52"
+  image = docker_image.thunder.latest
+  name  = "thunder-5-2"
   ports {
     # SSH Port
     internal = 22
@@ -65,21 +75,21 @@ resource "docker_container" "cthunder" {
     content = file("./cthunder/demo.cfg")
     file    = "/tmp/demo.cfg"
   }
+  upload {
+    content = file("./cthunder/lb-down.tcl")
+    file    = "/a10data/aflex/lb-down.arl"
+  }
 }
 
-#
-#  Setup local vars for use by main.tf
 locals {
-  depends_on = [docker_container.cthunder]
+  depends_on = [docker_container.thunder]
   cth_ips = {
-    for net in docker_container.cthunder.network_data :
+    for net in docker_container.thunder.network_data :
     net.network_name => net.ip_address
   }
 }
 
-#
-# Print out the Incoming IP address where connections to the SLB are made.
-output "ips" {
-  depends_on = [docker_container.cthunder]
-  value = "${local.cth_ips["slb-outside-net"]}"
+output "outside-net" {
+  depends_on = [docker_container.thunder]
+  value      = "${local.cth_ips["slb-outside-net"]}"
 }

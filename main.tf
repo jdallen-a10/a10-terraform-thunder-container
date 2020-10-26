@@ -8,7 +8,7 @@
 ##  John D. Allen
 ##  Sr. Solutions Engineer
 ##  A10 Networks, Inc.
-##  August, 2020
+##  September, 2020
 ##
 ##  Licensed under Apache-2.0 for private use.
 ##  All other Rights Reserved.
@@ -24,13 +24,13 @@ provider "docker" {
   host = "tcp://192.168.99.99:2375/"
 }
 
-# Network where server(s) are located
+# Data Network where server(s) are located
 resource "docker_network" "slb-inside-net" {
   name   = "slb-inside-net"
   driver = "macvlan"
 }
 
-# Network accessible from outside nodes
+# Data Network accessible to outside nodes
 resource "docker_network" "slb-outside-net" {
   name   = "slb-outside-net"
   driver = "bridge"
@@ -38,8 +38,6 @@ resource "docker_network" "slb-outside-net" {
 
 ##
 ## Portainer
-## - Docker Management GUI -- Highly Recommended!
-##   https://www.portainer.io/
 ##
 resource "docker_image" "portainer" {
   name         = "portainer/portainer:latest"
@@ -88,6 +86,10 @@ resource "docker_container" "nginx1" {
     name = "slb-inside-net"
   }
   restart = "always"
+  upload {
+    content = file("./nginx/web1/index.html")
+    file    = "/usr/share/nginx/html/index.html"
+  }
 }
 
 resource "docker_container" "nginx2" {
@@ -102,12 +104,14 @@ resource "docker_container" "nginx2" {
     name = "slb-inside-net"
   }
   restart = "always"
+  upload {
+    content = file("./nginx/web2/index.html")
+    file    = "/usr/share/nginx/html/index.html"
+  }
 }
 
 ##
 ##  Syslog Server
-##  - Simple Syslog server
-##    https://github.com/jdallen-a10/syslog-ng
 ##
 resource "docker_image" "syslog" {
   name         = "jdallen/syslog-ng:latest"
@@ -139,26 +143,28 @@ resource "docker_container" "syslog" {
     content = file("./syslog/syslog-ng.conf")
     file    = "/etc/syslog-ng/syslog-ng.conf"
   }
+  # volumes {
+  #   host_path      = "/root/terraform/basic-slb/syslog/syslog-ng.conf"
+  #   container_path = "/etc/syslog-ng/syslog-ng.conf"
+  # }
 }
 
 ##
 ## revproxy
-## - Simple HTTP Reverse Proxy
-##   Not necessarily needed, but nice to have for accessing web pages
 ##   https://github.com/john2exonets/http-reverse-proxy
 ##
 resource "docker_image" "revproxy" {
-  name = "jdallen/revproxy:latest"
+  name         = "jdallen/revproxy:latest"
   keep_locally = true
 }
 
 resource "docker_container" "revproxy" {
   depends_on = [
-    docker_container.cthunder,
+    docker_container.thunder,
     docker_network.slb-outside-net
   ]
   image = docker_image.revproxy.latest
-  name = "revproxy"
+  name  = "revproxy"
   ports {
     protocol = "tcp"
     internal = 8080
@@ -175,5 +181,5 @@ resource "docker_container" "revproxy" {
     "REVPROX_LOCAL_IP=0.0.0.0",
     "REVPROX_REMOTE=${local.cth_ips["slb-outside-net"]}:881"
   ]
-  restart="always"
+  restart = "always"
 }
