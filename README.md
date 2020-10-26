@@ -14,7 +14,7 @@ a pull request!
 There is a Syslog server that I use to show log messages from the cThunder. I use my own version, but any
 syslog server should work just fine. My Syslog server is located here: https://github.com/jdallen-a10/syslog-ng
 
-NOTE!   Terraform does NOT seem to be able to (Sept. 2020 -- version ) attach a port to a specific network.
+NOTE!   Terraform does NOT seem to be able to (Sept. 2020 -- version 0.12.29 ) attach a port to a specific network.
 Because of this, you will NOT be able to bring up the webpage from outside of the VM.  You will have to use
 something like curl to connect to the 'slb-outside-net' interface on the cThunder in order to show the
 connection to one of the Nginx containers, or use a reverse proxy from the default 'bridge' network to the 
